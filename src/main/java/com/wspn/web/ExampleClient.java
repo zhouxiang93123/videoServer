@@ -92,7 +92,7 @@ public class ExampleClient extends WebSocketClient {
 	public void onMessage( String message ) {
 		System.out.println( "received: " + message );
 		JSONObject jsonObject = new JSONObject(message);
-		
+		System.err.println();
 		
 	}
 
