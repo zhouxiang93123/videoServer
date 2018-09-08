@@ -114,10 +114,8 @@ public class HelloServlet extends HttpServlet {
 			System.out
 					.println("rnis speed: " + dqn.getUser().getSpeed());
 			dqn.setBuffer(buffer.doubleValue());
-			
-			dqn.setBandWidth(bandWidth);
-			dqn.setBandWidth2(throughput.doubleValue());
-			dqn.setBandWidth3(avgSpeed);
+			dqn.setBandWidth(throughput.doubleValue());
+			dqn.setBandWidth2(avgSpeed);
 			dqn.setAction(3);
 			//dqn.setActionQL(3);
 			
