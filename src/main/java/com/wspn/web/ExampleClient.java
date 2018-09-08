@@ -37,85 +37,121 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-
 import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
-/** This example demonstrates how to create a websocket connection to a server. Only the most important callbacks are overloaded. */
+/**
+ * This example demonstrates how to create a websocket connection to a server.
+ * Only the most important callbacks are overloaded.
+ */
 public class ExampleClient extends WebSocketClient {
+	long inteval;
+	long delay;
+	String flag;
+	String sendMessage;
+	HashMap<String, Integer> mapResult;
+	HashMap<String, Integer> mapMME;
 
-	class MyThread {
-		public void run() throws InterruptedException {
-//			while (true) {
-//				Thread.sleep(500);
-//				send("{\"message\": \"config_get\"}");
-//				Thread.sleep(500);
-//			}
-		}
-	}
-	
-	public ExampleClient( URI serverUri , Draft draft ) {
-		super( serverUri, draft );
+	public ExampleClient(URI serverUri, Draft draft) {
+		super(serverUri, draft);
 	}
 
-	public ExampleClient( URI serverURI ) {
-		super( serverURI );
+	public ExampleClient(URI serverURI) {
+		super(serverURI);
 	}
 
-	public ExampleClient( URI serverUri, Map<String, String> httpHeaders ) {
+	public ExampleClient(URI serverUri, Map<String, String> httpHeaders, long delay, long inteval, String flag,
+			String sendMessage) {
 		super(serverUri, httpHeaders);
+		this.delay = delay;
+		this.inteval = inteval;
+		this.flag = flag;
+		this.sendMessage = sendMessage;
+
 	}
 
 	@Override
-	public void onOpen( ServerHandshake handshakedata ) {
-		System.out.println( "opened connection" );
-		TimerTask task=new TimerTask() {
+	public void onOpen(ServerHandshake handshakedata) {
+		System.out.println("opened connection");
+		TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
-				send("{\"message\": \"ue_get\",\"stats\":true}");
+				send(sendMessage);
 			}
 		};
-		Timer timer=new Timer();
-		long delay=0;
-		long inteval=100;
-		timer.schedule(task, delay,inteval);
-		// if you plan to refuse connection based on ip or httpfields overload: onWebsocketHandshakeReceivedAsClient
+		Timer timer = new Timer();
+		timer.schedule(task, delay, inteval);
+		// if you plan to refuse connection based on ip or httpfields overload:
+		// onWebsocketHandshakeReceivedAsClient
 	}
 
 	@Override
-	public void onMessage( String message ) {
-		System.out.println( "received: " + message );
-		JSONObject jsonObject = new JSONObject(message);
-		System.err.println();
-		
+	public void onMessage(String message) {
+		if (flag.equals("enb")) {
+			JSONObject jsonObject = new JSONObject(message);
+			JSONArray jsonArray = jsonObject.getJSONArray("ue_list");
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject ueData = jsonArray.getJSONObject(i);
+				int enbUeId = ueData.getInt("enb_ue_id");
+				JSONArray cellInfoArray = ueData.getJSONArray("cells");
+				JSONObject cellObject = cellInfoArray.getJSONObject(0);
+				double dlBitRate = cellObject.getDouble("dl_bitrate");
+				System.out.println(
+						"enbUeId: " + enbUeId + "  dlBitRate: " + (int) (dlBitRate / 1024.0) + "KB/s");
+			}
+		} else {
+			JSONObject jsonObject = new JSONObject(message);
+			JSONArray jsonArray = jsonObject.getJSONArray("ue_list");
+			for (int i = 0; i < jsonArray.length(); i++) {
+				JSONObject ueData = jsonArray.getJSONObject(i);
+				boolean registered = ueData.getBoolean("registered");
+				if (registered == true) {
+					int enbUeId = ueData.getInt("enb_ue_id");
+					long imsi = ueData.getLong("imsi");
+					JSONArray bearerInfoArray = ueData.getJSONArray("bearers");
+					JSONObject bearerObject = bearerInfoArray.getJSONObject(bearerInfoArray.length() - 1);
+					String ip = bearerObject.getString("ip");
+					System.err.println("enbUeId: " + enbUeId + " ip: " + ip + "   imsi: " + imsi);
+				}
+			}
+		}
 	}
 
 	@Override
-	public void onClose( int code, String reason, boolean remote ) {
+	public void onClose(int code, String reason, boolean remote) {
 		// The codecodes are documented in class org.java_websocket.framing.CloseFrame
-		System.out.println( "Connection closed by " + ( remote ? "remote peer" : "us" ) + " Code: " + code + " Reason: " + reason );
+		System.out.println(
+				"Connection closed by " + (remote ? "remote peer" : "us") + " Code: " + code + " Reason: " + reason);
 	}
 
 	@Override
-	public void onError( Exception ex ) {
+	public void onError(Exception ex) {
 		ex.printStackTrace();
 		// if the error is fatal then onClose will be called additionally
 	}
 
-	public static void main( String[] args ) throws URISyntaxException {
-		Map<String, String> httpHeaders=new HashMap<>();
-		httpHeaders.put("Origin", "chrome-extension://omalebghpgejjiaoknljcfmglgbpocdp");
-		ExampleClient c = new ExampleClient( new URI( "ws://10.108.145.150:9001" ),httpHeaders); // more about drafts here: http://github.com/TooTallNate/Java-WebSocket/wiki/Drafts
-		c.connect();
-//		while (!c.getReadyState().equals(READYSTATE.OPEN)) {
-//		}
-		
+	public HashMap<String, Integer> getMapResult() {
+		return mapResult;
 	}
+
+	public void setMapResult(HashMap<String, Integer> mapResult) {
+		this.mapResult = mapResult;
+	}
+
+	public HashMap<String, Integer> getMapMME() {
+		return mapMME;
+	}
+
+	public void setMapMME(HashMap<String, Integer> mapMME) {
+		this.mapMME = mapMME;
+	}
+
 
 }
