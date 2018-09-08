@@ -44,6 +44,7 @@ import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /** This example demonstrates how to create a websocket connection to a server. Only the most important callbacks are overloaded. */
@@ -92,7 +93,16 @@ public class ExampleClient extends WebSocketClient {
 	public void onMessage( String message ) {
 		System.out.println( "received: " + message );
 		JSONObject jsonObject = new JSONObject(message);
-		System.err.println();
+		JSONArray jsonArray = jsonObject.getJSONArray("ue_list");
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject ueData = jsonArray.getJSONObject(i);
+			int enbUeId = ueData.getInt("enb_ue_id");
+			JSONArray cellInfoArray = ueData.getJSONArray("cells");
+			JSONObject cellObject = cellInfoArray.getJSONObject(0);
+			double dlBitRate = cellObject.getDouble("dl_bitrate");
+			System.out.println("enbUeId: " + enbUeId + "  dlBitRate: " + dlBitRate);
+			
+		}
 		
 	}
 
