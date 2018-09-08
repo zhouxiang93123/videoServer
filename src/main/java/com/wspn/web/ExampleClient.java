@@ -47,6 +47,7 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+
 /** This example demonstrates how to create a websocket connection to a server. Only the most important callbacks are overloaded. */
 public class ExampleClient extends WebSocketClient {
 
@@ -96,11 +97,16 @@ public class ExampleClient extends WebSocketClient {
 		JSONArray jsonArray = jsonObject.getJSONArray("ue_list");
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject ueData = jsonArray.getJSONObject(i);
-			int enbUeId = ueData.getInt("enb_ue_id");
-			JSONArray cellInfoArray = ueData.getJSONArray("cells");
-			JSONObject cellObject = cellInfoArray.getJSONObject(0);
-			double dlBitRate = cellObject.getDouble("dl_bitrate");
-			System.out.println("enbUeId: " + enbUeId + "  dlBitRate: " + dlBitRate);
+			boolean registered = ueData.getBoolean("registered");
+			if (registered == true) {
+				int enbUeId = ueData.getInt("enb_ue_id");
+				long imsi = ueData.getLong("imsi");
+				JSONArray bearerInfoArray = ueData.getJSONArray("bearers");
+				JSONObject bearerObject = bearerInfoArray.getJSONObject(bearerInfoArray.length()-1);
+				String ip = bearerObject.getString("ip");
+				System.err.println("enbUeId: " + enbUeId +" ip: " +ip +"   imsi: " +imsi);
+			}
+			
 			
 		}
 		
@@ -118,10 +124,10 @@ public class ExampleClient extends WebSocketClient {
 		// if the error is fatal then onClose will be called additionally
 	}
 
-	public static void main( String[] args ) throws URISyntaxException {
+	public static void main( String[] args ) throws URISyntaxException {     
 		Map<String, String> httpHeaders=new HashMap<>();
 		httpHeaders.put("Origin", "chrome-extension://omalebghpgejjiaoknljcfmglgbpocdp");
-		ExampleClient c = new ExampleClient( new URI( "ws://10.108.145.150:9001" ),httpHeaders); // more about drafts here: http://github.com/TooTallNate/Java-WebSocket/wiki/Drafts
+		ExampleClient c = new ExampleClient( new URI( "ws://10.108.145.150:9000" ),httpHeaders); // more about drafts here: http://github.com/TooTallNate/Java-WebSocket/wiki/Drafts
 		c.connect();
 //		while (!c.getReadyState().equals(READYSTATE.OPEN)) {
 //		}
