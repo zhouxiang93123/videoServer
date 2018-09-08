@@ -56,7 +56,7 @@ public class ExampleClient extends WebSocketClient {
 	String flag;
 	String sendMessage;
 	HashMap<String, Integer> mapResult;
-	HashMap<String, Integer> mapMME;
+	HashMap<Integer, String> mapMME;
 
 	public ExampleClient(URI serverUri, Draft draft) {
 		super(serverUri, draft);
@@ -103,6 +103,10 @@ public class ExampleClient extends WebSocketClient {
 				JSONArray cellInfoArray = ueData.getJSONArray("cells");
 				JSONObject cellObject = cellInfoArray.getJSONObject(0);
 				double dlBitRate = cellObject.getDouble("dl_bitrate");
+				if (mapMME.containsKey(enbUeId)) {
+					mapResult.put(mapMME.get(enbUeId), (int) (dlBitRate / 1024.0));
+					System.err.println(mapResult.toString());
+				}
 				System.out.println(
 						"enbUeId: " + enbUeId + "  dlBitRate: " + (int) (dlBitRate / 1024.0) + "KB/s");
 			}
@@ -118,6 +122,7 @@ public class ExampleClient extends WebSocketClient {
 					JSONArray bearerInfoArray = ueData.getJSONArray("bearers");
 					JSONObject bearerObject = bearerInfoArray.getJSONObject(bearerInfoArray.length() - 1);
 					String ip = bearerObject.getString("ip");
+					mapMME.put(enbUeId, ip);
 					System.err.println("enbUeId: " + enbUeId + " ip: " + ip + "   imsi: " + imsi);
 				}
 			}
@@ -145,12 +150,12 @@ public class ExampleClient extends WebSocketClient {
 		this.mapResult = mapResult;
 	}
 
-	public HashMap<String, Integer> getMapMME() {
+	public HashMap<Integer,String> getMapMME() {
 		return mapMME;
 	}
 
-	public void setMapMME(HashMap<String, Integer> mapMME) {
-		this.mapMME = mapMME;
+	public void setMapMME(HashMap<Integer,String> mapMME2) {
+		this.mapMME = mapMME2;
 	}
 
 
