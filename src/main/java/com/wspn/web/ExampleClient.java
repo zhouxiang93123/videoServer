@@ -44,10 +44,12 @@ import org.java_websocket.drafts.Draft;
 import org.java_websocket.drafts.Draft_6455;
 import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ServerHandshake;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 9399a54... add
 /** This example demonstrates how to create a websocket connection to a server. Only the most important callbacks are overloaded. */
 public class ExampleClient extends WebSocketClient {
 
@@ -94,6 +96,7 @@ public class ExampleClient extends WebSocketClient {
 	public void onMessage( String message ) {
 		System.out.println( "received: " + message );
 		JSONObject jsonObject = new JSONObject(message);
+<<<<<<< HEAD
 		JSONArray jsonArray = jsonObject.getJSONArray("ue_list");
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject ueData = jsonArray.getJSONObject(i);
@@ -109,6 +112,9 @@ public class ExampleClient extends WebSocketClient {
 			
 			
 		}
+=======
+		System.err.println();
+>>>>>>> parent of 9399a54... add
 		
 	}
 
@@ -124,10 +130,17 @@ public class ExampleClient extends WebSocketClient {
 		// if the error is fatal then onClose will be called additionally
 	}
 
+<<<<<<< HEAD
 	public static void main( String[] args ) throws URISyntaxException {     
 		Map<String, String> httpHeaders=new HashMap<>();
 		httpHeaders.put("Origin", "chrome-extension://omalebghpgejjiaoknljcfmglgbpocdp");
 		ExampleClient c = new ExampleClient( new URI( "ws://10.108.145.150:9000" ),httpHeaders); // more about drafts here: http://github.com/TooTallNate/Java-WebSocket/wiki/Drafts
+=======
+	public static void main( String[] args ) throws URISyntaxException {
+		Map<String, String> httpHeaders=new HashMap<>();
+		httpHeaders.put("Origin", "chrome-extension://omalebghpgejjiaoknljcfmglgbpocdp");
+		ExampleClient c = new ExampleClient( new URI( "ws://10.108.145.150:9001" ),httpHeaders); // more about drafts here: http://github.com/TooTallNate/Java-WebSocket/wiki/Drafts
+>>>>>>> parent of 9399a54... add
 		c.connect();
 //		while (!c.getReadyState().equals(READYSTATE.OPEN)) {
 //		}
