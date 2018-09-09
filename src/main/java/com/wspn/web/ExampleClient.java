@@ -29,6 +29,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Time;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
@@ -95,24 +96,27 @@ public class ExampleClient extends WebSocketClient {
 
 	@Override
 	public void onMessage(String message) {
+		Set<Integer> set= new HashSet<>();
 		if (flag.equals("enb")) {
-			HashMap<String, Integer> map=new HashMap<>();
 			JSONObject jsonObject = new JSONObject(message);
 			JSONArray jsonArray = jsonObject.getJSONArray("ue_list");
 			for (int i = 0; i < jsonArray.length(); i++) {
 				JSONObject ueData = jsonArray.getJSONObject(i);
 				int enbUeId = ueData.getInt("enb_ue_id");
+				set.add(enbUeId);
 				JSONArray cellInfoArray = ueData.getJSONArray("cells");
 				JSONObject cellObject = cellInfoArray.getJSONObject(0);
 				double dlBitRate = cellObject.getDouble("dl_bitrate");
-//				System.out.println(
-//						"enbUeId: " + enbUeId + "  dlBitRate: " + (int) (dlBitRate / 1024.0) + "KB/s");
+				System.out.println(
+						"enbUeId: " + enbUeId + "  dlBitRate: " + (int) (dlBitRate / 1024.0) + "KB/s");
 				if (mapMME.containsKey(enbUeId)) {
+					System.err.println("new ueid" + enbUeId);
 					mapResult.put(mapMME.get(enbUeId), (int) (dlBitRate / 1024.0));
-					map.put(mapMME.get(enbUeId), (int) (dlBitRate / 1024.0));
 				}
+				
 			}
-			System.err.println(map.toString());
+			
+			System.err.println(mapResult.toString());
 		} else {
 			JSONObject jsonObject = new JSONObject(message);
 			JSONArray jsonArray = jsonObject.getJSONArray("ue_list");
@@ -122,14 +126,22 @@ public class ExampleClient extends WebSocketClient {
 				if (ueData.has("enb_ue_id")) {
 					
 					int enbUeId = ueData.getInt("enb_ue_id");
+					set.add(enbUeId);
 					long imsi = ueData.getLong("imsi");
 					JSONArray bearerInfoArray = ueData.getJSONArray("bearers");
 					JSONObject bearerObject = bearerInfoArray.getJSONObject(bearerInfoArray.length() - 1);
 					String ip = bearerObject.getString("ip");
 					mapMME.put(enbUeId, ip);
-				//	System.err.println("enbUeId: " + enbUeId + " ip: " + ip + "   imsi: " + imsi);
+					System.err.println("enbUeId: " + enbUeId + " ip: " + ip + "   imsi: " + imsi);
 				}
 			}
+			for (Integer key : mapMME.keySet())  {
+				if(!set.contains(key)) {
+					mapMME.remove(key);
+				}
+				
+			} 
+			System.out.println("mapMME: " + mapMME.toString());
 		}
 	}
 
