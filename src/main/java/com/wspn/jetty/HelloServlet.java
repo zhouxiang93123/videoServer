@@ -78,8 +78,8 @@ public class HelloServlet extends HttpServlet {
 		Double buffer = null;
 		Double throughput = null;
 		long endTime = 0;
-		Double speed=null;
-		double avgSpeed=0;
+		Double speed = null;
+		double avgSpeed = 0;
 		if (request.getParameter("buffer").equals("NaN")) {
 			buffer = 0.0;
 			System.out.println("bufferLength: " + request.getParameter("buffer") + " " + buffer);
@@ -89,7 +89,7 @@ public class HelloServlet extends HttpServlet {
 		}
 		throughput = Double.valueOf(request.getParameter("throughput"));
 		endTime = Long.valueOf(request.getParameter("time"));
-		
+
 		if (MyProxyServlet2.hashMapDQN.containsKey(request.getRemoteAddr())) {
 			DQN dqn = MyProxyServlet2.hashMapDQN.get(request.getRemoteAddr());
 			dqn.setEndDownload(endTime);
@@ -100,25 +100,26 @@ public class HelloServlet extends HttpServlet {
 				if (dqn.getStartDownload() != 0) {
 					long time = dqn.getEndDownload() - dqn.getStartDownload();
 					System.out.println("time " + time);
-					speed=(size*8/1024.0 / ((time-50) / 1000.0));
-					if(dqn.getUser().getSpeed3()!=0) {
-						avgSpeed=(speed+dqn.getUser().getSpeed3())/2.0;
-					}else {
-						avgSpeed=speed;
+					speed = (size * 8 / 1024.0 / ((time - 50) / 1000.0));
+					if (dqn.getUser().getSpeed3() != 0) {
+						avgSpeed = (speed + dqn.getUser().getSpeed3()) / 2.0;
+					} else {
+						avgSpeed = speed;
 					}
-					//System.out.println(speed);
+					// System.out.println(speed);
 				}
 			}
-			System.out.println("throughput from client: " + throughput.intValue());
-			System.out.println("computer speed: "+avgSpeed);
-			System.out
-					.println("rnis speed: " + dqn.getUser().getSpeed());
+
 			dqn.setBuffer(buffer.doubleValue());
-			dqn.setBandWidth(throughput.doubleValue());
-			dqn.setBandWidth2(avgSpeed);
+			dqn.setBandWidth();
+			dqn.setBandWidth2(throughput.doubleValue());
+			dqn.setBandWidth3(avgSpeed);
+			System.out.println("rnis speed: " + dqn.getUser().getSpeed());
+			System.out.println("client speed: " + throughput.intValue());
+			System.out.println("computer speed: " + avgSpeed);
 			dqn.setAction(3);
-			//dqn.setActionQL(3);
-			
+			// dqn.setActionQL(3);
+
 			if (dqn.isReady()) {
 				Integer a = dqn.getUser().getAction();
 				data = a.toString();
@@ -129,7 +130,7 @@ public class HelloServlet extends HttpServlet {
 			} else {
 				System.err.println("not ready");
 			}
-			
+
 		}
 	}
 

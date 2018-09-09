@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.Timestamp;
 import java.text.SimpleDateFormat;
@@ -43,6 +44,7 @@ import com.wspn.pcap4j.DQN;
 import com.wspn.pcap4j.Pcap;
 import com.wspn.pcap4j.Pcap2;
 import com.wspn.pcap4j.PcapTest;
+import com.wspn.web.getRnis;
 
 public class MyProxyServlet2 extends AsyncProxyServlet {
 
@@ -50,19 +52,27 @@ public class MyProxyServlet2 extends AsyncProxyServlet {
 	String urlForCache = "http://localhost:8080/ddd/";
 	public static HashMap<String, DQN> hashMapDQN = new HashMap<>();
 	public static HashMap<String, Integer> hashMapIpSpeed = new HashMap<>();
-    public static HashMap<String, Long> hashMapFileSize=new HashMap<>();
-	
+	public static HashMap<String, Long> hashMapFileSize = new HashMap<>();
+	public static getRnis getRnis = new getRnis();
+
 	@Override
 	protected void onResponseContent(HttpServletRequest arg0, HttpServletResponse arg1, Response arg2, byte[] arg3,
 			int arg4, int arg5, Callback arg6) {
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		super.onResponseContent(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
 	}
+
 	@Override
 	protected StreamWriter newWriteListener(HttpServletRequest request, Response proxyResponse) {
 		// TODO Auto-generated method stub
 		return new MyStreamWriter(request, proxyResponse);
 	}
-	
+
 	@Override
 	protected String rewriteTarget(HttpServletRequest request) {
 		String getRequestURL = request.getRequestURI().replace("/", "");
@@ -110,35 +120,37 @@ public class MyProxyServlet2 extends AsyncProxyServlet {
 			System.out.println("响应目标: " + proxyResponse.getRequest() + proxyResponse.toString());
 		}
 	}
-	public static boolean readfile(String filepath) throws FileNotFoundException, IOException {
-        try {
 
-                File file = new File(filepath);
-                if (!file.isDirectory()) {
-                        System.out.println("文件");
-                        System.out.println("path=" + file.getPath());
-                        System.out.println("absolutepath=" + file.getAbsolutePath());
-                        System.out.println("name=" + file.getName());
-                } else if (file.isDirectory()) {
-                        System.out.println("文件夹");
-                        String[] filelist = file.list();
-                        for (int i = 0; i < filelist.length; i++) {
-                                File readfile = new File(filepath + "\\" + filelist[i]);
-                                if (!readfile.isDirectory()) {
-                                        hashMapFileSize.put(readfile.getName(), readfile.length());
-                                } else if (readfile.isDirectory()) {
-                                        readfile(filepath + "\\" + filelist[i]);
-                                }
-                        }
+	public static boolean readfile(String filepath) throws FileNotFoundException, IOException, URISyntaxException {
+		getRnis.start();
+		try {
+			File file = new File(filepath);
+			if (!file.isDirectory()) {
+				System.out.println("文件");
+				System.out.println("path=" + file.getPath());
+				System.out.println("absolutepath=" + file.getAbsolutePath());
+				System.out.println("name=" + file.getName());
+			} else if (file.isDirectory()) {
+				System.out.println("文件夹");
+				String[] filelist = file.list();
+				for (int i = 0; i < filelist.length; i++) {
+					File readfile = new File(filepath + "\\" + filelist[i]);
+					if (!readfile.isDirectory()) {
+						hashMapFileSize.put(readfile.getName(), readfile.length());
+					} else if (readfile.isDirectory()) {
+						readfile(filepath + "\\" + filelist[i]);
+					}
+				}
 
-                }
+			}
 
-        } catch (FileNotFoundException e) {
-                System.out.println("readfile()   Exception:" + e.getMessage());
-        }
-        for(String string:hashMapFileSize.keySet()) {
-        	System.out.println(string+" "+hashMapFileSize.get(string));
-        }
-        return true;
-}
+		} catch (FileNotFoundException e) {
+			System.out.println("readfile()   Exception:" + e.getMessage());
+		}
+		for (String string : hashMapFileSize.keySet()) {
+			System.out.println(string + " " + hashMapFileSize.get(string));
+		}
+		return true;
+	}
+
 }

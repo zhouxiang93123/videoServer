@@ -48,6 +48,8 @@ import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.wspn.util.LimitQueue;
+
 /**
  * This example demonstrates how to create a websocket connection to a server.
  * Only the most important callbacks are overloaded.
@@ -57,7 +59,7 @@ public class ExampleClient extends WebSocketClient {
 	long delay;
 	String flag;
 	String sendMessage;
-	HashMap<String, Integer> mapResult;
+	HashMap<String, LimitQueue<Integer>> mapResult;
 	HashMap<Integer, String> mapMME;
 
 	public ExampleClient(URI serverUri, Draft draft) {
@@ -110,7 +112,14 @@ public class ExampleClient extends WebSocketClient {
 				//System.out.println("enbUeId: " + enbUeId + "  dlBitRate: " + (int) (dlBitRate / 1024.0) + "KB/s");
 				if (mapMME.containsKey(enbUeId)) {
 					//System.err.println("new ueid" + enbUeId);
-					mapResult.put(mapMME.get(enbUeId), (int) (dlBitRate / 1024.0));
+					if(!mapResult.containsKey(mapMME.get(enbUeId))) {
+						LimitQueue<Integer> limitQueue=new LimitQueue<>(1);
+						limitQueue.offer((int) (dlBitRate / 1024.0));
+						mapResult.put(mapMME.get(enbUeId), limitQueue);
+					}else {
+						mapResult.get(mapMME.get(enbUeId)).offer((int) (dlBitRate / 1024.0));;
+					}
+					
 				}
 
 			}
@@ -122,7 +131,6 @@ public class ExampleClient extends WebSocketClient {
 				JSONObject ueData = jsonArray.getJSONObject(i);
 				boolean registered = ueData.getBoolean("registered");
 				if (ueData.has("enb_ue_id")) {
-
 					int enbUeId = ueData.getInt("enb_ue_id");
 					set.add(enbUeId);
 					long imsi = ueData.getLong("imsi");
@@ -156,11 +164,13 @@ public class ExampleClient extends WebSocketClient {
 		// if the error is fatal then onClose will be called additionally
 	}
 
-	public HashMap<String, Integer> getMapResult() {
+
+
+	public HashMap<String, LimitQueue<Integer>> getMapResult() {
 		return mapResult;
 	}
 
-	public void setMapResult(HashMap<String, Integer> mapResult) {
+	public void setMapResult(HashMap<String, LimitQueue<Integer>> mapResult) {
 		this.mapResult = mapResult;
 	}
 
