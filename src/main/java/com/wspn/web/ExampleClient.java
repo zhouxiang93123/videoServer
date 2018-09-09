@@ -120,6 +120,7 @@ public class ExampleClient extends WebSocketClient {
 				JSONObject ueData = jsonArray.getJSONObject(i);
 				boolean registered = ueData.getBoolean("registered");
 				if (ueData.has("enb_ue_id")) {
+					
 					int enbUeId = ueData.getInt("enb_ue_id");
 					long imsi = ueData.getLong("imsi");
 					JSONArray bearerInfoArray = ueData.getJSONArray("bearers");
