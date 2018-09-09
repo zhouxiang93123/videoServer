@@ -89,14 +89,14 @@ public class ExampleClient extends WebSocketClient {
 			}
 		};
 		Timer timer = new Timer();
-	    timer.schedule(task, delay, inteval);
+		timer.schedule(task, delay, inteval);
 		// if you plan to refuse connection based on ip or httpfields overload:
 		// onWebsocketHandshakeReceivedAsClient
 	}
 
 	@Override
 	public void onMessage(String message) {
-		Set<Integer> set= new HashSet<>();
+		Set<Integer> set = new HashSet<>();
 		if (flag.equals("enb")) {
 			JSONObject jsonObject = new JSONObject(message);
 			JSONArray jsonArray = jsonObject.getJSONArray("ue_list");
@@ -107,16 +107,14 @@ public class ExampleClient extends WebSocketClient {
 				JSONArray cellInfoArray = ueData.getJSONArray("cells");
 				JSONObject cellObject = cellInfoArray.getJSONObject(0);
 				double dlBitRate = cellObject.getDouble("dl_bitrate");
-				System.out.println(
-						"enbUeId: " + enbUeId + "  dlBitRate: " + (int) (dlBitRate / 1024.0) + "KB/s");
+				//System.out.println("enbUeId: " + enbUeId + "  dlBitRate: " + (int) (dlBitRate / 1024.0) + "KB/s");
 				if (mapMME.containsKey(enbUeId)) {
-					System.err.println("new ueid" + enbUeId);
+					//System.err.println("new ueid" + enbUeId);
 					mapResult.put(mapMME.get(enbUeId), (int) (dlBitRate / 1024.0));
 				}
-				
+
 			}
-			
-			System.err.println(mapResult.toString());
+			//System.err.println(mapResult.toString());
 		} else {
 			JSONObject jsonObject = new JSONObject(message);
 			JSONArray jsonArray = jsonObject.getJSONArray("ue_list");
@@ -124,7 +122,7 @@ public class ExampleClient extends WebSocketClient {
 				JSONObject ueData = jsonArray.getJSONObject(i);
 				boolean registered = ueData.getBoolean("registered");
 				if (ueData.has("enb_ue_id")) {
-					
+
 					int enbUeId = ueData.getInt("enb_ue_id");
 					set.add(enbUeId);
 					long imsi = ueData.getLong("imsi");
@@ -132,16 +130,16 @@ public class ExampleClient extends WebSocketClient {
 					JSONObject bearerObject = bearerInfoArray.getJSONObject(bearerInfoArray.length() - 1);
 					String ip = bearerObject.getString("ip");
 					mapMME.put(enbUeId, ip);
-					System.err.println("enbUeId: " + enbUeId + " ip: " + ip + "   imsi: " + imsi);
+					// System.err.println("enbUeId: " + enbUeId + " ip: " + ip + " imsi: " + imsi);
 				}
 			}
-			for (Integer key : mapMME.keySet())  {
-				if(!set.contains(key)) {
+			for (Integer key : mapMME.keySet()) {
+				if (!set.contains(key)) {
 					mapMME.remove(key);
 				}
-				
-			} 
-			System.out.println("mapMME: " + mapMME.toString());
+
+			}
+			//System.out.println("mapMME: " + mapMME.toString());
 		}
 	}
 
@@ -166,13 +164,12 @@ public class ExampleClient extends WebSocketClient {
 		this.mapResult = mapResult;
 	}
 
-	public HashMap<Integer,String> getMapMME() {
+	public HashMap<Integer, String> getMapMME() {
 		return mapMME;
 	}
 
-	public void setMapMME(HashMap<Integer,String> mapMME2) {
+	public void setMapMME(HashMap<Integer, String> mapMME2) {
 		this.mapMME = mapMME2;
 	}
-
 
 }
