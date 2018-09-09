@@ -30,6 +30,7 @@ import java.net.URISyntaxException;
 import java.sql.Time;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executor;
@@ -87,7 +88,7 @@ public class ExampleClient extends WebSocketClient {
 			}
 		};
 		Timer timer = new Timer();
-		timer.schedule(task, delay, inteval);
+	    timer.schedule(task, delay, inteval);
 		// if you plan to refuse connection based on ip or httpfields overload:
 		// onWebsocketHandshakeReceivedAsClient
 	}
@@ -95,6 +96,7 @@ public class ExampleClient extends WebSocketClient {
 	@Override
 	public void onMessage(String message) {
 		if (flag.equals("enb")) {
+			HashMap<String, Integer> map=new HashMap<>();
 			JSONObject jsonObject = new JSONObject(message);
 			JSONArray jsonArray = jsonObject.getJSONArray("ue_list");
 			for (int i = 0; i < jsonArray.length(); i++) {
@@ -103,27 +105,28 @@ public class ExampleClient extends WebSocketClient {
 				JSONArray cellInfoArray = ueData.getJSONArray("cells");
 				JSONObject cellObject = cellInfoArray.getJSONObject(0);
 				double dlBitRate = cellObject.getDouble("dl_bitrate");
+//				System.out.println(
+//						"enbUeId: " + enbUeId + "  dlBitRate: " + (int) (dlBitRate / 1024.0) + "KB/s");
 				if (mapMME.containsKey(enbUeId)) {
 					mapResult.put(mapMME.get(enbUeId), (int) (dlBitRate / 1024.0));
-					System.err.println(mapResult.toString());
+					map.put(mapMME.get(enbUeId), (int) (dlBitRate / 1024.0));
 				}
-				System.out.println(
-						"enbUeId: " + enbUeId + "  dlBitRate: " + (int) (dlBitRate / 1024.0) + "KB/s");
 			}
+			System.err.println(map.toString());
 		} else {
 			JSONObject jsonObject = new JSONObject(message);
 			JSONArray jsonArray = jsonObject.getJSONArray("ue_list");
 			for (int i = 0; i < jsonArray.length(); i++) {
 				JSONObject ueData = jsonArray.getJSONObject(i);
 				boolean registered = ueData.getBoolean("registered");
-				if (registered == true) {
+				if (ueData.has("enb_ue_id")) {
 					int enbUeId = ueData.getInt("enb_ue_id");
 					long imsi = ueData.getLong("imsi");
 					JSONArray bearerInfoArray = ueData.getJSONArray("bearers");
 					JSONObject bearerObject = bearerInfoArray.getJSONObject(bearerInfoArray.length() - 1);
 					String ip = bearerObject.getString("ip");
 					mapMME.put(enbUeId, ip);
-					System.err.println("enbUeId: " + enbUeId + " ip: " + ip + "   imsi: " + imsi);
+				//	System.err.println("enbUeId: " + enbUeId + " ip: " + ip + "   imsi: " + imsi);
 				}
 			}
 		}
