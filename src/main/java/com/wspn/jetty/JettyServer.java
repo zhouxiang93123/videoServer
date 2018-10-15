@@ -71,9 +71,12 @@ public class JettyServer {
 		String logPath = "C:\\Users\\Administrator\\workspace\\zx\\logs";
 		//MyProxyServlet2.fileOperation(downloadPath);
 		//MyProxyServlet2.countPopularity(logPath);
-		MyProxyServlet2.readfile("D:\\Program Files\\apache-tomcat-8.5.5\\webapps\\ddd");
+		//MyProxyServlet2.readfile("D:\\Program Files\\apache-tomcat-8.5.5\\webapps\\ddd");
+		MyProxyServlet2.readfile("/home/wspn/apache-tomcat-9.0.8/webapps/ddd");
 		InitPcap.init();
-		MyGraph.init("C:\\Users\\Administrator\\workspace\\zx\\src\\main\\java\\com\\wspn\\jetty\\Mygraph3.pb");
+		//MyGraph.init("C:\\Users\\Administrator\\workspace\\zx\\src\\main\\java\\com\\wspn\\jetty\\Mygraph3.pb");
+		MyGraph.init("/home/wspn/git/videoServer/src/main/java/com/wspn/jetty/Mygraph3.pb");
+	//	MyGraph.init("/home/wspn/git/videoServer/src/main/java/com/wspn/jetty/sMygraph03.pb");
 		servlet.setTimeout(30000);
 		ServletHolder proxyServletHolder = new ServletHolder(servlet);
 		proxyServletHolder.setAsyncSupported(true);
@@ -144,9 +147,11 @@ public class JettyServer {
  		String logPath = "C:\\Users\\Administrator\\workspace\\zx\\logs";
  		//MyProxyServlet2.fileOperation(downloadPath);
  		//MyProxyServlet2.countPopularity(logPath);
- 		MyProxyServlet2.readfile("D:\\Program Files\\apache-tomcat-8.5.5\\webapps\\ddd");
+ 		//MyProxyServlet2.readfile("D:\\Program Files\\apache-tomcat-8.5.5\\webapps\\ddd");
+ 		MyProxyServlet2.readfile("/home/wspn/apache-tomcat-9.0.8/webapps/ddd");
  		InitPcap.init();
- 		MyGraph.init("C:\\Users\\Administrator\\workspace\\zx\\src\\main\\java\\com\\wspn\\jetty\\Mygraph3.pb");
+ 		//MyGraph.init("C:\\Users\\Administrator\\workspace\\zx\\src\\main\\java\\com\\wspn\\jetty\\Mygraph3.pb");
+ 		MyGraph.init("/home/wspn/git/videoServer/src/main/java/com/wspn/jetty/Mygraph3.pb");
  		servlet.setTimeout(30000);
  		ServletHolder proxyServletHolder = new ServletHolder(servlet);
  		proxyServletHolder.setAsyncSupported(true);

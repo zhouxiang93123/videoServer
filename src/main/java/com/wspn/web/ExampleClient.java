@@ -24,26 +24,15 @@ package com.wspn.web;
  *  OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import java.lang.reflect.Executable;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.sql.Time;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import org.eclipse.jetty.util.thread.ScheduledExecutorScheduler;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.drafts.Draft;
-import org.java_websocket.drafts.Draft_6455;
-import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ServerHandshake;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -113,7 +102,7 @@ public class ExampleClient extends WebSocketClient {
 				if (mapMME.containsKey(enbUeId)) {
 					//System.err.println("new ueid" + enbUeId);
 					if(!mapResult.containsKey(mapMME.get(enbUeId))) {
-						LimitQueue<Integer> limitQueue=new LimitQueue<>(1);
+						LimitQueue<Integer> limitQueue=new LimitQueue<>(10);
 						limitQueue.offer((int) (dlBitRate / 1024.0));
 						mapResult.put(mapMME.get(enbUeId), limitQueue);
 					}else {

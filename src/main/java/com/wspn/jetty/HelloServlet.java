@@ -91,14 +91,16 @@ public class HelloServlet extends HttpServlet {
 		endTime = Long.valueOf(request.getParameter("time"));
 
 		if (MyProxyServlet2.hashMapDQN.containsKey(request.getRemoteAddr())) {
+			long time = 0;
 			DQN dqn = MyProxyServlet2.hashMapDQN.get(request.getRemoteAddr());
 			dqn.setEndDownload(endTime);
 			System.out.println("下载完成时间: " + dqn.getEndDownload());
 			if (MyProxyServlet2.hashMapFileSize.containsKey(dqn.getFileName())) {
+				setLimit(dqn.getFileName());
 				long size = MyProxyServlet2.hashMapFileSize.get(dqn.getFileName());
 				System.out.println("下载完成文件大小为: " + MyProxyServlet2.hashMapFileSize.get(dqn.getFileName()));
 				if (dqn.getStartDownload() != 0) {
-					long time = dqn.getEndDownload() - dqn.getStartDownload();
+					time = dqn.getEndDownload() - dqn.getStartDownload();
 					System.out.println("time " + time);
 					speed = (size * 8 / 1024.0 / ((time - 50) / 1000.0));
 					if (dqn.getUser().getSpeed3() != 0) {
@@ -109,15 +111,16 @@ public class HelloServlet extends HttpServlet {
 					// System.out.println(speed);
 				}
 			}
-
 			dqn.setBuffer(buffer.doubleValue());
-			dqn.setBandWidth();
+			dqn.setBandWidth(time);
 			dqn.setBandWidth2(throughput.doubleValue());
 			dqn.setBandWidth3(avgSpeed);
 			System.out.println("rnis speed: " + dqn.getUser().getSpeed());
 			System.out.println("client speed: " + throughput.intValue());
 			System.out.println("computer speed: " + avgSpeed);
-			dqn.setAction(3);
+			dqn.setAction(1);
+			// dqn.setActionBB(2);
+			// dqn.setActionBR(3);
 			// dqn.setActionQL(3);
 
 			if (dqn.isReady()) {
@@ -131,6 +134,26 @@ public class HelloServlet extends HttpServlet {
 				System.err.println("not ready");
 			}
 
+		}
+	}
+
+	public void setLimit(String s) {
+		if (s.contains("_25.m4s") || s.contains("_65.m4s") || s.contains("_85.m4s") || s.contains("_95.m4s")) {
+			setSpeed("5000");
+		} else if (s.contains("_5.m4s") || s.contains("_38.m4s") || s.contains("_55.m4s")) {
+			setSpeed("9000");
+		} else if (s.contains("_45.m4s") || s.contains("_75.m4s") || s.contains("_86.m4s")) {
+			setSpeed("15000");
+		}
+	}
+
+	public void setSpeed(String speed) {
+		Process process = null;
+		try {
+			process = Runtime.getRuntime().exec("wondershaper eth2 1000000 " + speed);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

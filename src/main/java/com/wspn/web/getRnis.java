@@ -20,13 +20,13 @@ public class getRnis {
 	public void start() throws URISyntaxException {
 		Map<String, String> httpHeaders = new HashMap<>();
 		httpHeaders.put("Origin", "chrome-extension://omalebghpgejjiaoknljcfmglgbpocdp");
-		ExampleClient cilentForENB = new ExampleClient(new URI("ws://10.108.145.150:9001"), httpHeaders, 0, 1000, "enb",
+		ExampleClient cilentForENB = new ExampleClient(new URI("ws://10.108.145.52:9001"), httpHeaders, 0, 100, "enb",
 				"{\"message\": \"ue_get\",\"stats\":true}");
 		cilentForENB.setMapMME(mapMME);
 		cilentForENB.setMapResult(mapResult);
 		cilentForENB.setConnectionLostTimeout(0);
 		cilentForENB.connect();
-		ExampleClient cilentForMME = new ExampleClient(new URI("ws://10.108.145.150:9000"), httpHeaders, 0, 1000, "mme",
+		ExampleClient cilentForMME = new ExampleClient(new URI("ws://10.108.145.52:9000"), httpHeaders, 0, 1000, "mme",
 				"{\"message\": \"ue_get\",\"stats\":true}");
 		cilentForMME.setConnectionLostTimeout(0);
 		cilentForMME.setMapMME(mapMME);
@@ -48,13 +48,13 @@ public class getRnis {
 		httpHeaders.put("Origin", "chrome-extension://omalebghpgejjiaoknljcfmglgbpocdp");
 		final HashMap<Integer, String> mapMME = new HashMap<>();
 		final HashMap<String, LimitQueue<Integer>> mapResult = new HashMap<>();
-		ExampleClient cilentForENB = new ExampleClient(new URI("ws://10.108.145.150:9001"), httpHeaders, 0, 1000, "enb",
+		ExampleClient cilentForENB = new ExampleClient(new URI("ws://10.108.145.52:9001"), httpHeaders, 0, 200, "enb",
 				"{\"message\": \"ue_get\",\"stats\":true}");
 		cilentForENB.setMapMME(mapMME);
 		cilentForENB.setMapResult(mapResult);
 		cilentForENB.setConnectionLostTimeout(0);
 		cilentForENB.connect();
-		ExampleClient cilentForMME = new ExampleClient(new URI("ws://10.108.145.150:9000"), httpHeaders, 0, 100, "mme",
+		ExampleClient cilentForMME = new ExampleClient(new URI("ws://10.108.145.52:9000"), httpHeaders, 0, 1000, "mme",
 				"{\"message\": \"ue_get\",\"stats\":true}");
 		cilentForMME.setConnectionLostTimeout(0);
 		cilentForMME.setMapMME(mapMME);
@@ -73,7 +73,7 @@ public class getRnis {
 				}
 			};
 			Timer timer = new Timer();
-			timer.schedule(task, 0, 100);
+			timer.schedule(task, 0, 200);
 	}
 
 	public HashMap<Integer, String> getMapMME() {

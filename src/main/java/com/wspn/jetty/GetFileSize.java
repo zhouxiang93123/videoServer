@@ -7,7 +7,7 @@ import java.io.IOException;
 public class GetFileSize {
 	
 	public static void main(String[] args) throws FileNotFoundException, IOException {
-		System.out.println(readfile("D:\\Program Files\\apache-tomcat-8.5.5\\webapps\\ddd"));
+		System.out.println(readfile("/home/wspn/apache-tomcat-9.0.8/webapps/ddd"));
 	}
 	  /**
      * 读取某个文件夹下的所有文件
@@ -26,7 +26,7 @@ public class GetFileSize {
                             System.out.println("文件夹");
                             String[] filelist = file.list();
                             for (int i = 0; i < filelist.length; i++) {
-                                    File readfile = new File(filepath + "\\" + filelist[i]);
+                                    File readfile = new File(filepath + "/" + filelist[i]);
                                     if (!readfile.isDirectory()) {
                                             System.out.println("path=" + readfile.getPath());
                                             System.out.println("absolutepath="
@@ -35,7 +35,7 @@ public class GetFileSize {
                                             System.out.println("size= "+readfile.length());
 
                                     } else if (readfile.isDirectory()) {
-                                            readfile(filepath + "\\" + filelist[i]);
+                                            readfile(filepath + "/" + filelist[i]);
                                     }
                             }
 

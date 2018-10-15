@@ -48,8 +48,10 @@ import com.wspn.web.getRnis;
 
 public class MyProxyServlet2 extends AsyncProxyServlet {
 
-	String urlForDL = "http://10.108.145.24:8080/ddd/";
-	String urlForCache = "http://localhost:8080/ddd/";
+	//String urlForDL = "http://10.108.145.24:8080/ddd/";
+	//String urlForCache = "http://localhost:8080/ddd/";
+	String urlForDL = "http://10.108.145.24:8088/ddd/";
+	String urlForCache = "http://localhost:8088/ddd/";
 	public static HashMap<String, DQN> hashMapDQN = new HashMap<>();
 	public static HashMap<String, Integer> hashMapIpSpeed = new HashMap<>();
 	public static HashMap<String, Long> hashMapFileSize = new HashMap<>();
@@ -58,12 +60,6 @@ public class MyProxyServlet2 extends AsyncProxyServlet {
 	@Override
 	protected void onResponseContent(HttpServletRequest arg0, HttpServletResponse arg1, Response arg2, byte[] arg3,
 			int arg4, int arg5, Callback arg6) {
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		super.onResponseContent(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
 	}
 
@@ -78,7 +74,7 @@ public class MyProxyServlet2 extends AsyncProxyServlet {
 		String getRequestURL = request.getRequestURI().replace("/", "");
 		String actionURL = getRequestURL;
 		final String add = request.getRemoteAddr();
-
+System.out.println("ss"+add);
 		if (!hashMapDQN.containsKey(add)) {
 			System.err.println("------" + hashMapDQN.size() + "------");
 			DQN dqn = new DQN();
@@ -102,6 +98,7 @@ public class MyProxyServlet2 extends AsyncProxyServlet {
 
 		}
 		System.out.println("客户端请求目标: " + getRequestURL + "  " + System.currentTimeMillis());
+		
 		hashMapDQN.get(add).setFileName(getRequestURL);
 		if (getRequestURL.contains("2Mbps")) {
 			hashMapDQN.get(add).getUser().setAction2(1);
@@ -134,11 +131,11 @@ public class MyProxyServlet2 extends AsyncProxyServlet {
 				System.out.println("文件夹");
 				String[] filelist = file.list();
 				for (int i = 0; i < filelist.length; i++) {
-					File readfile = new File(filepath + "\\" + filelist[i]);
+					File readfile = new File(filepath + "/" + filelist[i]);
 					if (!readfile.isDirectory()) {
 						hashMapFileSize.put(readfile.getName(), readfile.length());
 					} else if (readfile.isDirectory()) {
-						readfile(filepath + "\\" + filelist[i]);
+						readfile(filepath + "/" + filelist[i]);
 					}
 				}
 
@@ -152,5 +149,13 @@ public class MyProxyServlet2 extends AsyncProxyServlet {
 		}
 		return true;
 	}
-
+	public void setSpeed(String speed) {
+		Process process = null;
+		try {
+			process = Runtime.getRuntime().exec("wondershaper eth2 1000000 "+speed);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
